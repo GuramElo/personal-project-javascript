@@ -1,12 +1,12 @@
-function Transaction(){
-  this.logs=[];
-  this.store={};
-
+class Transaction{
+  logs:any[]=[];
+  store:{} | null={};
+  errContain:any;
 //dispatch  (the beginning)
 
-this.dispatch=(GlobArr)=>{
+dispatch=(GlobArr:any)=>{
 
-GlobArr.sort((ano,bano)=>{return ano.index-bano.index;});
+GlobArr.sort((ano:any,bano:any)=>{return ano.index-bano.index;});
 //sorting by indexes
 //======
 
@@ -14,7 +14,7 @@ GlobArr.sort((ano,bano)=>{return ano.index-bano.index;});
 //validation (the beginning)
 
 for(let a=0;a<GlobArr.length;a++){
-var CurrOb=GlobArr[a],bool1=false,bool2=false,bool3=false;
+var CurrOb=GlobArr[a],bool1:boolean=false,bool2:boolean=false,bool3:boolean=false;
 //------
 if(CurrOb.hasOwnProperty("index"))bool1=true;
 if(CurrOb.hasOwnProperty("meta")){
@@ -23,7 +23,7 @@ if(CurrOb.hasOwnProperty("meta")){
 if(CurrOb.hasOwnProperty("call"))bool3=true;
 
 
-if(bool1 && bool2 && bool3 && Object.keys(CurrOb).length<5);//do nothing
+if(bool1 && bool2 && bool3 && Object.keys(CurrOb).length<5)0;//do nothing
 else throw new Error("Invalid Object found, it lacks one of the important properties").message;
 //------
 }
@@ -39,8 +39,8 @@ for(let a=0;a<GlobArr.length;a++){
 let InitialStore=GlobArr[a];
 
 GlobArr[a].call()
-.catch((err)=>{/*console.log("stuka");*/this.errContain=err; return "errorm";})
-.then((ee)=>{if(ee==="errorm"){
+.catch((err:any)=>{/*console.log("stuka");*/this.errContain=err; return "errorm";})
+.then((ee:any)=>{if(ee==="errorm"){
 //------
 //------
 //------
@@ -56,7 +56,7 @@ if(!GlobArr[a].hasOwnProperty("restore")){
 
   for(let ji=a-1;ji>-1;ji--){
     if(this.logs[ji].error==null){
-    GlobArr[ji].restore().catch((erts)=>{
+    GlobArr[ji].restore().catch((erts:any)=>{
      this.store={};//სანამ ერორს გავისვრით, რაც იმის ნიშანია, რომ გენერალური როლბექი ჩაიშალა სთორში ვწერ ცარიელ ობიექტს
       throw new Error("General rollback wasn't successful on the way up, so we can't do anything");
       
@@ -103,16 +103,16 @@ if(!GlobArr[a].hasOwnProperty("restore")){
 //------
 //------
 //------
-GlobArr[a].restore().catch((tre)=>{
+GlobArr[a].restore().catch((tre:any)=>{
 return ["errork",tre];
-}).then((trek)=>{
+}).then((trek:any)=>{
   if(Array.isArray(trek)){
 //console.log("restore was also errored");
 
 
 for(let ji=a-1;ji>-1;ji--){
 if(this.logs[ji].error==null){
-GlobArr[ji].restore().catch((erts)=>{
+GlobArr[ji].restore().catch((erts:any)=>{
 //ამ შემთხვევაში ზემოთ მიმავალს კიდევ არასწორი რესთორი შეგვხვდა, ამიტომ ვაერორებთ:
 //სხვა შემთხვევაში პროგრამა ამ catch-ში საერთოდ არ შემოიხედავს და დაბლა ჩავა, სადაც წარმატებული ქოლის როლბექი მოხდება
   
@@ -238,12 +238,12 @@ const scenario = [
           description: 'This action is responsible for reading the most popular customers'
           },
 				// callback for main execution
-        call: async (store) => {var t=90;
+        call: async (store:any) => {var t=90;
 throw new Error("err");
         return 2;
         },
 				// callback for rollback
-        restore: async (store) => {
+        restore: async (store:any) => {
           throw new Error("err");
         }
     },
@@ -254,12 +254,12 @@ throw new Error("err");
           description: 'This action is responsible for deleting customer'
         },
 				// callback for main execution
-        call: async (store) => {
+        call: async (store:any) => {
           
          // throw new Error("asd");
         },
 				// callback for rollback
-        restore: async (store) => {
+        restore: async (store:any) => {
          // throw new Error("asd");
         }
     },
@@ -270,11 +270,11 @@ throw new Error("err");
         description: 'This action is responsible for reading the most popular customers'
         },
 				// callback for main execution
-        call: async (store) => {
+        call: async (store:any) => {
           //throw new Error("hghh")
         },
 				// callback for rollback
-        restore: async (store) => {
+        restore: async (store:any) => {
           //throw new Error("hghh")
         }
     }
@@ -288,7 +288,7 @@ var transaction=new Transaction();
     const store = transaction.store; // {} | null
     const logs = transaction.logs; // []
     
-  } catch (err) {
+  } catch (err:any) {
     console.log(err.stack);
     // log detailed error
   }
