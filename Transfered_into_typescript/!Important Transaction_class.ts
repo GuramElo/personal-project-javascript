@@ -1,20 +1,83 @@
-class Transaction{
-  logs:any[]=[];
+//import { scenario } from "./init_scenario";
+export namespace nm_complect{//./
+export  interface logs_struct{
+    [index:number]:{
+      index:number;
+      meta:{title:string;} & {description:string};
+      storeBefore?:Object;
+      storeAfter?:Object;
+      error:err_property;
+    };
+}
+
+
+export type err_ch=any;
+export type arr_value={
+  call(store:any):Promise<any>;
+  restore?(store:any):Promise<any>;
+  index:number;
+  meta:{
+    title:string;
+    description:string;
+  }
+};
+
+
+                                                                             }//   .\
+                                                                             
+type err_property=null | {
+  name:string;
+  message:string;
+  stack:string;
+} | {
+  comment:string;
+};
+
+
+interface scenarios{
+[index:number]:nm_complect.arr_value;
+}
+
+
+
+
+interface clas_trans<T>{
+  logs:nm_complect.logs_struct;
+store:Object | null;
+errContain:T;
+dispatch(arr:scenarios):void;
+}
+
+
+
+
+
+//აქამდეა ინტერფეისები და ტიპები
+
+
+
+
+
+
+
+export class Transaction implements clas_trans<nm_complect.err_ch>{
+
+  logs:nm_complect.logs_struct=[];
   store:{} | null={};
-  errContain:any;
+  errContain:nm_complect.err_ch;
 //dispatch  (the beginning)
 
-dispatch=(GlobArr:any)=>{
+dispatch=(GlobArr:Object)=>{
 
-GlobArr.sort((ano:any,bano:any)=>{return ano.index-bano.index;});
+(<any>GlobArr).sort((ano:Object,bano:Object):number=>{return (<any>ano).index-(<any>bano).index;});
 //sorting by indexes
 //======
 
 
 //validation (the beginning)
 
-for(let a=0;a<GlobArr.length;a++){
-var CurrOb=GlobArr[a],bool1:boolean=false,bool2:boolean=false,bool3:boolean=false;
+for(let a=0;a<(<any>GlobArr).length;a++){
+var CurrOb:any=(<any>GlobArr)[a],bool1:boolean=false,bool2:boolean=false,bool3:boolean=false;
 //------
 if(CurrOb.hasOwnProperty("index"))bool1=true;
 if(CurrOb.hasOwnProperty("meta")){
@@ -24,7 +87,7 @@ if(CurrOb.hasOwnProperty("call"))bool3=true;
 
 
 if(bool1 && bool2 && bool3 && Object.keys(CurrOb).length<5)0;//do nothing
-else throw new Error("Invalid Object found, it lacks one of the important properties").message;
+else (():never=>{throw new Error("Invalid Object found, it lacks one of the important properties").message;})();
 //------
 }
 //validation
@@ -33,14 +96,14 @@ else throw new Error("Invalid Object found, it lacks one of the important proper
 
 //call and restore
 
-for(let a=0;a<GlobArr.length;a++){
+for(let a=0;a<(<any>GlobArr).length;a++){
 
 
-let InitialStore=GlobArr[a];
+let InitialStore=(<any>GlobArr)[a];
 
-GlobArr[a].call()
-.catch((err:any)=>{/*console.log("stuka");*/this.errContain=err; return "errorm";})
-.then((ee:any)=>{if(ee==="errorm"){
+(<any>GlobArr)[a].call()
+.catch((err:nm_complect.err_ch)=>{/*console.log("stuka");*/this.errContain=err; return "errorm";})
+.then((ee:nm_complect.err_ch)=>{if(ee==="errorm"){
 //------
 //------
 //------
@@ -50,13 +113,13 @@ GlobArr[a].call()
 //------რჩევაა, თორემ აქაც სწორადაა ყველაფერი
 //------ვიცი რომ გაცილებით უფრო ლაკონიურადაც შეიძლებოდა, მაგრამ სიცხე მაქვს გუშინ და დღეს, ამიტომ ესეც ძლივს დავწერე
 //------ბოდიში ამდენი წვალება რომ გიწევს
-if(!GlobArr[a].hasOwnProperty("restore")){
+if(!(<any>GlobArr)[a].hasOwnProperty("restore")){
 
 
 
   for(let ji=a-1;ji>-1;ji--){
     if(this.logs[ji].error==null){
-    GlobArr[ji].restore().catch((erts:any)=>{
+    (<any>GlobArr)[ji].restore().catch((erts:nm_complect.err_ch):never=>{
      this.store={};//სანამ ერორს გავისვრით, რაც იმის ნიშანია, რომ გენერალური როლბექი ჩაიშალა სთორში ვწერ ცარიელ ობიექტს
       throw new Error("General rollback wasn't successful on the way up, so we can't do anything");
       
@@ -64,9 +127,9 @@ if(!GlobArr[a].hasOwnProperty("restore")){
       delete this.logs[ji].storeBefore;
       delete this.logs[ji].storeAfter;
       this.logs[ji].error={
-        name:"General rollback",
-        message:"ვაროლბექებთ ყველაფერს და ამიტომ ამასაც",
-        stack:"ტექნიკურად არ მომხდარა შეცდომა, General rollback-ში მოყვა"
+        name:<string>"General rollback",
+        message:<string>"ვაროლბექებთ ყველაფერს და ამიტომ ამასაც",
+        stack:<string>"ტექნიკურად არ მომხდარა შეცდომა, General rollback-ში მოყვა"
       }
     });
     }
@@ -75,19 +138,19 @@ if(!GlobArr[a].hasOwnProperty("restore")){
     
     }
     
-    let uuuu=this.logs.length-1;
+    let uuuu=(<any>this.logs).length-1;
     for(let tupik=uuuu;tupik>a-1;tupik--){
-      this.logs.splice(tupik,1);
+      (<any>this.logs).splice(tupik,1);
     }
     
     
     
     //---
-    this.logs.push({
+    (<any>this.logs).push({
       index:InitialStore.index,
       meta:InitialStore.meta,
       error:{
-        comment:"both, call and restore were errorred in this object"
+        comment:<string>"both, call and restore were errorred in this object"
       }
     });
 
@@ -103,16 +166,16 @@ if(!GlobArr[a].hasOwnProperty("restore")){
 //------
 //------
 //------
-GlobArr[a].restore().catch((tre:any)=>{
+(<any>GlobArr)[a].restore().catch((tre:nm_complect.err_ch):[string,any]=>{
 return ["errork",tre];
-}).then((trek:any)=>{
+}).then((trek:nm_complect.err_ch)=>{
   if(Array.isArray(trek)){
 //console.log("restore was also errored");
 
 
 for(let ji=a-1;ji>-1;ji--){
 if(this.logs[ji].error==null){
-GlobArr[ji].restore().catch((erts:any)=>{
+  (<any>GlobArr)[ji].restore().catch((erts:nm_complect.err_ch):never=>{
 //ამ შემთხვევაში ზემოთ მიმავალს კიდევ არასწორი რესთორი შეგვხვდა, ამიტომ ვაერორებთ:
 //სხვა შემთხვევაში პროგრამა ამ catch-ში საერთოდ არ შემოიხედავს და დაბლა ჩავა, სადაც წარმატებული ქოლის როლბექი მოხდება
   
@@ -136,9 +199,9 @@ if(this.logs[ji].error!=null && this.logs[ji].hasOwnProperty("error"))continue;
 
 }
 
-let uuuu=this.logs.length-1;
+let uuuu:number=(<any>this.logs).length-1;
 for(let tupik=uuuu;tupik>a-1;tupik--){
-  this.logs.splice(tupik,1);
+  (<any>this.logs).splice(tupik,1);
 }
 //ნუ ეს ნაგავს ასუფთავებს logs-დან,
 //რომელიც ჩემმა კოდმა არასაჭირო რაოდენობით დატოვა logs-ში
@@ -147,11 +210,11 @@ for(let tupik=uuuu;tupik>a-1;tupik--){
 
 
 //---
-this.logs.push({
-  index:InitialStore.index,
-  meta:InitialStore.meta,
+(<any>this.logs).push({
+  index:<number>InitialStore.index,
+  meta:<string>InitialStore.meta,
   error:{
-    comment:`both, call and restore were errorred in this object,
+    comment:<string>`both, call and restore were errorred in this object,
      or restore was not defined and it was needed`
   }
 });
@@ -162,13 +225,13 @@ this.logs.push({
 }
   else {
     setTimeout(()=>{
-      this.logs.push({
+      (<any>this.logs).push({
         index:InitialStore.index,
         meta:InitialStore.meta,
         error:{
-          name:this.errContain.name,
-          message:this.errContain.message,
-          stack:this.errContain.stack,
+          name:<string>this.errContain.name,
+          message:<string>this.errContain.message,
+          stack:<string>this.errContain.stack,
         }
       });
     },0)
@@ -181,11 +244,11 @@ this.logs.push({
 
 }
 else {
-this.logs.push({
+  (<any>this.logs).push({
   index:InitialStore.index,
   meta:InitialStore.meta,
   storeBefore:InitialStore,
-  storeAfter:GlobArr[a],
+  storeAfter:(<any>GlobArr)[a],
   error:null
 })
 }
@@ -210,12 +273,12 @@ setTimeout(()=>{console.log(this.logs)},0);
 
 
 ///////evaluating final store parameter value(the beginnig)
-let counter=0;
-for(let iter=0;iter<GlobArr.length;iter++){
-if(GlobArr[iter].error==null)counter++;}
+let counter:number=0;
+for(let iter=0;iter<(<any>GlobArr).length;iter++){
+if((<any>GlobArr)[iter].error==null)counter++;}
 
 
-if(counter==GlobArr.length)this.store={};//beacause in this case, not even one, restore waslaunched, to begin with
+if(counter==(<any>GlobArr).length)this.store={};//beacause in this case, not even one, restore waslaunched, to begin with
 //so it could not have been successful
 
 
@@ -230,75 +293,3 @@ else {this.store=null}//in other cases, beacause program reached this point
 }
 //dispatch (the end)
 }
-const scenario = [
-    {
-        index: 1,
-        meta: {
-          title: 'Read popular customers',
-          description: 'This action is responsible for reading the most popular customers'
-          },
-				// callback for main execution
-        call: async (store:any) => {var t=90;
-throw new Error("err");
-        return 2;
-        },
-				// callback for rollback
-        restore: async (store:any) => {
-          throw new Error("err");
-        }
-    },
-    {
-        index: 2,
-        meta: {
-          title: 'Delete customer',
-          description: 'This action is responsible for deleting customer'
-        },
-				// callback for main execution
-        call: async (store:any) => {
-          
-         // throw new Error("asd");
-        },
-				// callback for rollback
-        restore: async (store:any) => {
-         // throw new Error("asd");
-        }
-    },
-    {
-        index: 0,
-        meta: {
-        title: 'Read popular customers',
-        description: 'This action is responsible for reading the most popular customers'
-        },
-				// callback for main execution
-        call: async (store:any) => {
-          //throw new Error("hghh")
-        },
-				// callback for rollback
-        restore: async (store:any) => {
-          //throw new Error("hghh")
-        }
-    }
-];
-var transaction=new Transaction();
-//transaction.dispatch(scenario);
-
-(async() => {
-  try {
-    await transaction.dispatch(scenario);
-    const store = transaction.store; // {} | null
-    const logs = transaction.logs; // []
-    
-  } catch (err:any) {
-    console.log(err.stack);
-    // log detailed error
-  }
-})();
-/*
-P.S
-ნაგულისხმებია, რომ წარმატებული გენერალური როლბექის შემთხვევაში store იძლევა მაინც null-ს
-" -   If `transaction.store` returns ` null`, this means that the rollback mechanism was successfully launched. "
-თუ გენერალურიც ჩაიშალა მაშინ ვაბრუნებ {}-ს დანარჩენი შემთხვევები ზემოთაა აღწერილი და ნაზრუნი მაქვს, ცხადია თუ სწორად გავიაზრე პირობა.
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!და კიდევ ერთხელ - ბოდიში ასე გაწვალებისთვის!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-
-*/
